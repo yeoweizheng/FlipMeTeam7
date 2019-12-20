@@ -50,23 +50,23 @@
             <ImageView
                 android:id="@+id/chooseImageView0"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
 
             <ImageView
                 android:id="@+id/chooseImageView1"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView2"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView3"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
 
         </LinearLayout>
@@ -82,22 +82,22 @@
             <ImageView
                 android:id="@+id/chooseImageView4"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView5"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView6"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView7"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
 
         </LinearLayout>
@@ -113,22 +113,22 @@
             <ImageView
                 android:id="@+id/chooseImageView8"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView9"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView10"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView11"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
 
         </LinearLayout>
@@ -144,22 +144,22 @@
             <ImageView
                 android:id="@+id/chooseImageView12"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white" />
+                app:srcCompat="@android:color/transparent" />
 
             <ImageView
                 android:id="@+id/chooseImageView13"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView14"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
             <ImageView
                 android:id="@+id/chooseImageView15"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
+                app:srcCompat="@android:color/transparent"
                 />
 
         </LinearLayout>
@@ -176,22 +176,22 @@
             <ImageView
                 android:id="@+id/chooseImageView16"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white" />
+                app:srcCompat="@android:color/transparent" />
 
             <ImageView
                 android:id="@+id/chooseImageView17"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white" />
+                app:srcCompat="@android:color/transparent" />
 
             <ImageView
                 android:id="@+id/chooseImageView18"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white" />
+                app:srcCompat="@android:color/transparent" />
 
             <ImageView
                 android:id="@+id/chooseImageView19"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white" />
+                app:srcCompat="@android:color/transparent" />
 
 
             <ProgressBar

@@ -6,6 +6,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="buttonStyle">@style/defaultBtnStyle</item>
+        <item name="android:windowBackground">@drawable/background</item>
     </style>
 
     <style name="MainPageTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -14,6 +15,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="buttonStyle">@style/mainPageBtnStyle</item>
         <item name="android:fontFamily">@res/font/handlee_regular</item>
+        <item name="android:windowBackground">@color/ourBlue</item>
     </style>
 
     <style name="mainPageBtnStyle" parent="Widget.AppCompat.Button">

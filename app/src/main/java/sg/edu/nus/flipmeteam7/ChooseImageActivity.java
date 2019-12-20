@@ -93,6 +93,7 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("chooseImageView" + imageViewNo, "id", getPackageName()));
         imageView.setImageBitmap(imageCard.getBitmap());
+        imageView.setImageAlpha(255);
         imageCards.add(imageCard);
         imageViewNo++;
         int percentComplete = imageViewNo * 5;
@@ -132,7 +133,7 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         for(int i = 0; i < NO_OF_IMAGES; i++){
             ImageView imageView = (ImageView) findViewById(getResources().
                     getIdentifier("chooseImageView" + i, "id", getPackageName()));
-            imageView.setImageResource(R.color.white);
+            imageView.setImageAlpha(0);
             imageView.clearColorFilter();
             imageSelected.put(i, false);
             imageSelectedCount = 0;
