@@ -1,23 +1,31 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="buttonStyle">@style/btn_style</item>
+        <item name="buttonStyle">@style/defaultBtnStyle</item>
+    </style>
+
+    <style name="MainPageTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/mainPageBtnStyle</item>
         <item name="android:fontFamily">@res/font/handlee_regular</item>
     </style>
 
-    <style name="btn_style">
-        <item name="android:typeface">@font/handlee_regular</item>
+    <style name="mainPageBtnStyle" parent="Widget.AppCompat.Button">
+        <item name="android:fontFamily">@font/handlee_regular</item>
         <item name="android:textColor">@color/ourWhite</item>
-        <item name="android:background">@drawable/btn_rounded</item>
-        <item name="android:textSize">48dp</item>
+        <item name="android:background">@drawable/red_button</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
-
-
+    <style name="defaultBtnStyle" parent="Widget.AppCompat.Button.Small">
+        <item name="android:textColor">@color/ourWhite</item>
+        <item name="android:textAlignment">center</item>
+    </style>
 
 </resources>
