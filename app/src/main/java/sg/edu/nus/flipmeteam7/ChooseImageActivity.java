@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,6 +33,8 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     HashMap<Integer, Boolean> imageSelected;
     ArrayList<ImageCard> imageCards;
     ArrayList<ImageCard> gameCards;
+    private ProgressBar progressBar;
+    private TextView progressTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,10 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         imageSelectedCount = 0;
         imageCards = new ArrayList<ImageCard>();
         gameCards = new ArrayList<ImageCard>();
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setMax(100);
+        progressTextView = findViewById(R.id.progress_textview);
     }
 
     @Override
@@ -86,6 +95,9 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         imageView.setImageBitmap(imageCard.getBitmap());
         imageCards.add(imageCard);
         imageViewNo++;
+        int percentComplete = imageViewNo * 5;
+        progressBar.setProgress(percentComplete);
+        progressTextView.setText("Downloading.. " + percentComplete +" %");
         if(imageViewNo == NO_OF_IMAGES) setImageOnClickListeners();
     }
 
