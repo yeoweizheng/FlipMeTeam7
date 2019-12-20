@@ -18,7 +18,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
-        Intent intent = new Intent(this, ChooseImageActivity.class);
-        startActivity(intent);
+        switch(v.getId()){
+            case R.id.startGameButton:
+                Intent intent = new Intent(this, ChooseImageActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 }

@@ -19,6 +19,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
     ICallback callback;
+    int offset;
 
     public FetchImageTask(ICallback callback){
         this.callback = callback;
@@ -26,11 +27,9 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
 
     @Override
     protected Void doInBackground(String... urls) {
+        offset = 10;
         String htmlText = getHTMLText(urls[0]);
-        ArrayList<String> imgTags = getImgTags(htmlText, 25);
-        for(String imgTag : imgTags){
-            Log.d("weizheng", imgTag);
-        }
+        ArrayList<String> imgTags = getImgTags(htmlText, ChooseImageActivity.NO_OF_IMAGES + offset);
         fetchBitmaps(imgTags);
         return null;
     }
@@ -66,38 +65,51 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
         return imgTags;
     }
 
-    void fetchBitmaps(ArrayList<String> imgTags){
-        for(int i = 1; i < 21; i++){
+    void fetchBitmaps(ArrayList<String> imgTags) {
+        for (int i = offset; i < offset + ChooseImageActivity.NO_OF_IMAGES; i++) {
             String imgTag = imgTags.get(i);
             int index1 = imgTag.indexOf("http");
             int index2a = imgTag.indexOf("\"", index1);
             int index2b = imgTag.indexOf("'", index1);
             int index2;
-            if(index2a == -1 || index2b == -1) index2 = index2a == -1? index2b : index2a;
+            if (index2a == -1 || index2b == -1) index2 = index2a == -1 ? index2b : index2a;
             else index2 = Math.min(index2a, index2b);
             try {
-                URL url = new URL(imgTag.substring(index1, index2));
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoOutput(true);
-                String cookie = connection.getHeaderField( "Set-Cookie");
-                connection.disconnect();
-                connection = (HttpURLConnection) url.openConnection();
-                cookie = cookie != null? cookie.split(";")[0] : null;
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36");
-                connection.setRequestProperty("Cookie", cookie);
-                connection.connect();
-                Log.d("weizheng", url.toString());
-                Log.d("weizheng", ""+connection.getResponseCode());
-                if(connection.getResponseCode() == 200) {
-                    InputStream inputStream = connection.getInputStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    publishProgress(bitmap);
-                }
-                connection.disconnect();
+                final URL url = new URL(imgTag.substring(index1, index2));
+                Log.d("weizheng", "message");
+                //downloadImage(url);
+                // Download images in separate threads
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{ downloadImage(url);}
+                        catch(IOException e){e.printStackTrace();}
+                    }
+                }).start();
             } catch(IOException e){
                 e.printStackTrace();
             }
+            //try{ Thread.sleep(100); } catch(InterruptedException e){e.printStackTrace();}
         }
+    }
+
+    void downloadImage(URL url) throws IOException{
+        if (isCancelled()) return;
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        String cookie = connection.getHeaderField( "Set-Cookie");
+        connection.disconnect();
+        connection = (HttpURLConnection) url.openConnection();
+        cookie = cookie != null? cookie.split(";")[0] : null;
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36");
+        connection.setRequestProperty("Cookie", cookie);
+        connection.connect();
+        if(connection.getResponseCode() == 200) {
+            InputStream inputStream = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            publishProgress(bitmap);
+        }
+        connection.disconnect();
     }
 
     @Override
@@ -105,6 +117,10 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
         if(this.callback != null){
             this.callback.onBitmapReady(bitmap[0]);
         }
+    }
+
+    @Override
+    protected void onPostExecute(Void v){
     }
 
     public interface ICallback{
