@@ -40,13 +40,19 @@
         app:layout_constraintTop_toBottomOf="@id/urlEditText">
 
         <LinearLayout
-            android:id="@+id/chooseImageLayout1"
+            android:id="@+id/chooseImageLayout0"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHeight_percent="0.2"
             android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/chooseImageView0"
+                style="@style/imageViewStyle"
+                app:srcCompat="@android:color/white"
+                />
+
             <ImageView
                 android:id="@+id/chooseImageView1"
                 style="@style/imageViewStyle"
@@ -63,20 +69,21 @@
                 app:srcCompat="@android:color/white"
                 />
 
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/chooseImageLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout0"
+            app:layout_constraintHeight_percent="0.2"
+            android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/chooseImageView4"
                 style="@style/imageViewStyle"
                 app:srcCompat="@android:color/white"
                 />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/chooseImageLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout1"
-            app:layout_constraintHeight_percent="0.2"
-            android:orientation="horizontal">
             <ImageView
                 android:id="@+id/chooseImageView5"
                 style="@style/imageViewStyle"
@@ -93,20 +100,21 @@
                 app:srcCompat="@android:color/white"
                 />
 
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/chooseImageLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout1"
+            app:layout_constraintHeight_percent="0.2"
+            android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/chooseImageView8"
                 style="@style/imageViewStyle"
                 app:srcCompat="@android:color/white"
                 />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/chooseImageLayout3"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout2"
-            app:layout_constraintHeight_percent="0.2"
-            android:orientation="horizontal">
             <ImageView
                 android:id="@+id/chooseImageView9"
                 style="@style/imageViewStyle"
@@ -123,20 +131,21 @@
                 app:srcCompat="@android:color/white"
                 />
 
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/chooseImageLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout2"
+            app:layout_constraintHeight_percent="0.2"
+            android:orientation="horizontal">
             <ImageView
                 android:id="@+id/chooseImageView12"
                 style="@style/imageViewStyle"
                 app:srcCompat="@android:color/white"
                 />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/chooseImageLayout4"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout3"
-            app:layout_constraintHeight_percent="0.2"
-            android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/chooseImageView13"
                 style="@style/imageViewStyle"
@@ -153,20 +162,20 @@
                 app:srcCompat="@android:color/white"
                 />
 
-            <ImageView
-                android:id="@+id/chooseImageView16"
-                style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/chooseImageLayout5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout4"
+            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout3"
             app:layout_constraintHeight_percent="0.2"
             android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/chooseImageView16"
+                style="@style/imageViewStyle"
+                app:srcCompat="@android:color/white"
+                />
             <ImageView
                 android:id="@+id/chooseImageView17"
                 style="@style/imageViewStyle"
@@ -183,11 +192,6 @@
                 app:srcCompat="@android:color/white"
                 />
 
-            <ImageView
-                android:id="@+id/chooseImageView20"
-                style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
         </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 

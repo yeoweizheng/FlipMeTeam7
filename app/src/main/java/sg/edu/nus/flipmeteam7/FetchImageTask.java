@@ -2,9 +2,11 @@ package sg.edu.nus.flipmeteam7;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.renderscript.ScriptGroup;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +19,7 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
+public class FetchImageTask extends AsyncTask<String, ImageCard, Void> {
     ICallback callback;
     int offset;
 
@@ -29,7 +31,17 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
     protected Void doInBackground(String... urls) {
         offset = 10;
         String htmlText = getHTMLText(urls[0]);
-        ArrayList<String> imgTags = getImgTags(htmlText, ChooseImageActivity.NO_OF_IMAGES + offset);
+        if(htmlText == null) {
+            Log.d("weizheng", "html null");
+            if(this.callback != null) callback.makeToast("No html data received. Please try another webpage.");
+            return null;
+        }
+        ArrayList<String> imgTags = getImgTags(htmlText);
+        if(imgTags.size() < ChooseImageActivity.NO_OF_IMAGES + offset){
+            Log.d("weizheng", "insufficient");
+            if(this.callback != null) callback.makeToast("Insufficient images. Please try another search term.");
+            return null;
+        }
         fetchBitmaps(imgTags);
         return null;
     }
@@ -53,13 +65,18 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
         return stringBuffer.toString();
     }
 
-    ArrayList<String> getImgTags(String htmlText, int count){
+    ArrayList<String> getImgTags(String htmlText){
         ArrayList<String> imgTags = new ArrayList<String>();
         int lastIndex = 0;
-        for(int i = 0; i < count; i++){
-            int index1 = htmlText.indexOf("<img src=", lastIndex);
+        while(true){
+            int index1 = htmlText.indexOf("<img", lastIndex);
             int index2 = htmlText.indexOf(">", index1);
-            imgTags.add(htmlText.substring(index1, index2 + 1));
+            if(index1 == -1 || index2 == -1) break;
+            String imgTag = htmlText.substring(index1, index2 + 1);
+            if(imgTag.contains("http")) {
+                imgTags.add(imgTag);
+                Log.d("weizheng", htmlText.substring(index1, index2 + 1));
+            }
             lastIndex = index2;
         }
         return imgTags;
@@ -69,15 +86,9 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
         for (int i = offset; i < offset + ChooseImageActivity.NO_OF_IMAGES; i++) {
             String imgTag = imgTags.get(i);
             int index1 = imgTag.indexOf("http");
-            int index2a = imgTag.indexOf("\"", index1);
-            int index2b = imgTag.indexOf("'", index1);
-            int index2;
-            if (index2a == -1 || index2b == -1) index2 = index2a == -1 ? index2b : index2a;
-            else index2 = Math.min(index2a, index2b);
+            int index2 = imgTag.indexOf("\"", index1);
             try {
                 final URL url = new URL(imgTag.substring(index1, index2));
-                Log.d("weizheng", "message");
-                //downloadImage(url);
                 // Download images in separate threads
                 new Thread(new Runnable() {
                     @Override
@@ -107,15 +118,15 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
         if(connection.getResponseCode() == 200) {
             InputStream inputStream = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            publishProgress(bitmap);
+            publishProgress(new ImageCard(bitmap, url.toString()));
         }
         connection.disconnect();
     }
 
     @Override
-    protected void onProgressUpdate(Bitmap... bitmap){
+    protected void onProgressUpdate(ImageCard... imageCards){
         if(this.callback != null){
-            this.callback.onBitmapReady(bitmap[0]);
+            this.callback.onBitmapReady(imageCards[0]);
         }
     }
 
@@ -124,6 +135,7 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
     }
 
     public interface ICallback{
-        void onBitmapReady(Bitmap bitmap);
+        void onBitmapReady(ImageCard imageCard);
+        void makeToast(String message);
     }
 }

@@ -13,7 +13,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChooseImageActivity extends AppCompatActivity implements View.OnClickListener, FetchImageTask.ICallback {
@@ -22,6 +28,8 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     int imageViewNo, imageSelectedCount;
     FetchImageTask fetchImageTask;
     HashMap<Integer, Boolean> imageSelected;
+    ArrayList<ImageCard> imageCards;
+    ArrayList<ImageCard> gameCards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +37,16 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_choose_image);
         Button fetchButton = (Button) findViewById(R.id.fetchButton);
         fetchButton.setOnClickListener(this);
-        setImageOnClickListeners();
         imageSelected = new HashMap<Integer, Boolean>();
+        imageSelectedCount = 0;
+        imageCards = new ArrayList<ImageCard>();
+        gameCards = new ArrayList<ImageCard>();
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.fetchButton) startFetchImageTask();
-        for(int i = 1; i <= NO_OF_IMAGES; i++){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
             if(v.getId() == getResources().getIdentifier("chooseImageView" + i, "id", getPackageName())){
                 toggleImageView(i, (ImageView) v);
             }
@@ -57,8 +67,10 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
 
     void startFetchImageTask(){
         clearImages();
+        clearImageOnClickListeners();
         final EditText urlEditText = findViewById(R.id.urlEditText);
-        imageViewNo = 1;
+        imageViewNo = 0;
+        imageCards.clear();
         if(fetchImageTask != null){
             fetchImageTask.cancel(true);
         }
@@ -67,24 +79,45 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onBitmapReady(Bitmap bitmap){
-        if(imageViewNo > NO_OF_IMAGES) return;
+    public void onBitmapReady(ImageCard imageCard){
+        if(imageViewNo >= NO_OF_IMAGES) return;
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("chooseImageView" + imageViewNo, "id", getPackageName()));
-        imageView.setImageBitmap(bitmap);
+        imageView.setImageBitmap(imageCard.getBitmap());
+        imageCards.add(imageCard);
         imageViewNo++;
+        if(imageViewNo == NO_OF_IMAGES) setImageOnClickListeners();
+    }
+
+    @Override
+    public void makeToast(String message){
+        final String innerMsg = message;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), innerMsg, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     void setImageOnClickListeners(){
-        for(int i = 1; i <= NO_OF_IMAGES; i++){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
             ImageView imageView = (ImageView) findViewById(getResources().
                     getIdentifier("chooseImageView" + i, "id", getPackageName()));
             imageView.setOnClickListener(this);
         }
     }
 
+    void clearImageOnClickListeners(){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
+            ImageView imageView = (ImageView) findViewById(getResources().
+                    getIdentifier("chooseImageView" + i, "id", getPackageName()));
+            imageView.setOnClickListener(null);
+        }
+    }
+
     void clearImages(){
-        for(int i = 1; i <= NO_OF_IMAGES; i++){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
             ImageView imageView = (ImageView) findViewById(getResources().
                     getIdentifier("chooseImageView" + i, "id", getPackageName()));
             imageView.setImageResource(R.color.white);
@@ -94,8 +127,47 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    void resetImageToggles(){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
+            ImageView imageView = (ImageView) findViewById(getResources().
+                    getIdentifier("chooseImageView" + i, "id", getPackageName()));
+            imageView.clearColorFilter();
+            imageSelected.put(i, false);
+        }
+        imageSelectedCount = 0;
+    }
+
     void startGameActivity(){
+        generateGameCards();
+        saveBitmapFiles();
+        resetImageToggles();
         Intent intent = new Intent(this, GameActivity.class);
-        startActivity(intent);
+        intent.putExtra("mode", "singlePlayer");
+        startActivityForResult(intent, 0);
+    }
+
+    void generateGameCards(){
+        gameCards.clear();
+        for(int i = 0; i < NO_OF_IMAGES; i++){
+            if(imageSelected.get(i)) this.gameCards.add(imageCards.get(i));
+        }
+    }
+
+    void saveBitmapFiles(){
+        for(int i = 0; i < 6; i++){
+            String filename = "bitmap" + i;
+            File file = new File(getApplicationContext().getFilesDir(), filename);
+            if(file.exists()) file.delete();
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                gameCards.get(i).getBitmap().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] bytes = byteArrayOutputStream.toByteArray();
+                fileOutputStream.write(bytes);
+                fileOutputStream.close();
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 }
