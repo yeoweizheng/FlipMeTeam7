@@ -2,6 +2,7 @@ package sg.edu.nus.flipmeteam7;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.renderscript.ScriptGroup;
 import android.util.Log;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
+public class FetchImageTask extends AsyncTask<String, ImageCard, Void> {
     ICallback callback;
     int offset;
 
@@ -107,15 +108,15 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
         if(connection.getResponseCode() == 200) {
             InputStream inputStream = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            publishProgress(bitmap);
+            publishProgress(new ImageCard(bitmap, url.toString()));
         }
         connection.disconnect();
     }
 
     @Override
-    protected void onProgressUpdate(Bitmap... bitmap){
+    protected void onProgressUpdate(ImageCard... imageCards){
         if(this.callback != null){
-            this.callback.onBitmapReady(bitmap[0]);
+            this.callback.onBitmapReady(imageCards[0]);
         }
     }
 
@@ -124,6 +125,6 @@ public class FetchImageTask extends AsyncTask<String, Bitmap, Void> {
     }
 
     public interface ICallback{
-        void onBitmapReady(Bitmap bitmap);
+        void onBitmapReady(ImageCard imageCard);
     }
 }
