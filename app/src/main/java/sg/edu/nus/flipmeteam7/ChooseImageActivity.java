@@ -13,6 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.HashMap;
 
@@ -22,6 +25,9 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     int imageViewNo, imageSelectedCount;
     FetchImageTask fetchImageTask;
     HashMap<Integer, Boolean> imageSelected;
+    private ProgressBar progressBar;
+    private TextView progressTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +37,10 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         fetchButton.setOnClickListener(this);
         setImageOnClickListeners();
         imageSelected = new HashMap<Integer, Boolean>();
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setMax(100);
+        progressTextView = findViewById(R.id.progress_textview);
     }
 
     @Override
@@ -72,8 +82,15 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("chooseImageView" + imageViewNo, "id", getPackageName()));
         imageView.setImageBitmap(bitmap);
+        int percentComplete = imageViewNo * 5;
+        progressBar.setProgress(percentComplete);
+        progressTextView.setText("Downloading.. " + percentComplete +" %");
         imageViewNo++;
     }
+
+
+
+
 
     void setImageOnClickListeners(){
         for(int i = 1; i <= NO_OF_IMAGES; i++){

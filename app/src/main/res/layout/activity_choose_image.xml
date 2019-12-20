@@ -136,11 +136,12 @@
             app:layout_constraintTop_toBottomOf="@id/chooseImageLayout3"
             app:layout_constraintHeight_percent="0.2"
             android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/chooseImageView13"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
+                app:srcCompat="@android:color/white" />
+
             <ImageView
                 android:id="@+id/chooseImageView14"
                 style="@style/imageViewStyle"
@@ -158,36 +159,65 @@
                 app:srcCompat="@android:color/white"
                 />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/chooseImageLayout5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout4"
+            android:orientation="vertical"
             app:layout_constraintHeight_percent="0.2"
-            android:orientation="horizontal">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chooseImageLayout4">
+
             <ImageView
                 android:id="@+id/chooseImageView17"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
+                app:srcCompat="@android:color/white" />
+
             <ImageView
                 android:id="@+id/chooseImageView18"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
+                app:srcCompat="@android:color/white" />
+
             <ImageView
                 android:id="@+id/chooseImageView19"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
+                app:srcCompat="@android:color/white" />
 
             <ImageView
                 android:id="@+id/chooseImageView20"
                 style="@style/imageViewStyle"
-                app:srcCompat="@android:color/white"
-                />
+                app:srcCompat="@android:color/white" />
+
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="37dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="1"
+                android:progressBackgroundTint="@color/colorAccent"
+                android:progressTint="@color/colorPrimaryDark"
+                tools:visibility="visible" />
+
+
+            <TextView
+                android:id="@+id/progress_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/progress_bar"
+                android:layout_centerHorizontal="true"
+                android:text="0 %"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20sp"></TextView>
         </LinearLayout>
+
+
     </android.support.constraint.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+
+
+
+    </android.support.constraint.ConstraintLayout>
