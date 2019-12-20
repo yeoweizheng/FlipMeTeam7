@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">FlipMeTeam7</string>
+    <color name="ourBlack">#051200</color>
+    <color name="ourGreen">#678e3d</color>
+    <color name="ourWhite">#fdfffe</color>
+    <color name="ourRed">#f71c30</color>
+    <color name="ourBlue">#007ab3</color>
 </resources>

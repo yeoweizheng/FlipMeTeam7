@@ -6,6 +6,18 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/btn_style</item>
+        <item name="android:fontFamily">@res/font/handlee_regular</item>
     </style>
+
+    <style name="btn_style">
+        <item name="android:typeface">@font/handlee_regular</item>
+        <item name="android:textColor">@color/ourWhite</item>
+        <item name="android:background">@drawable/btn_rounded</item>
+        <item name="android:textSize">48dp</item>
+    </style>
+
+
+
 
 </resources>
