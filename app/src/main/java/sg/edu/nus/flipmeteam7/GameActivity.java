@@ -4,11 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -25,6 +27,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     boolean[] matched;
     boolean disableClick;
     int firstCardOpen;
+    int noAttempts;
+    int noMatches;
+    CountDownTimer timer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +45,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
         disableClick = false;
         firstCardOpen = -1;
+        noAttempts = 0;
+        noMatches = 0;
+        startTimer();
     }
     void generateGameCards(){
         gameCards = new ArrayList<ImageCard>();
@@ -89,6 +97,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             disableClick = false;
         } else {
             imageView.clearColorFilter();
+            noAttempts++;
+            updateNoAttempts(noAttempts);
             if(gameMap[firstCardOpen].getId() == gameMap[location].getId()){ // 2 cards open & matching
                 matched[firstCardOpen] = true;
                 matched[location] = true;
@@ -96,6 +106,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 disableCard(location);
                 closeUnmatchedCards();
                 firstCardOpen = -1;
+                noMatches++;
+                if(noMatches == 6) stopGame();
             } else { // 2 cards open && not matching
                 disableClick = true;
                 firstCardOpen = -1;
@@ -132,6 +144,34 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setOnClickListener(null);
     }
 
+    void updateNoAttempts(int n){
+        TextView noAttempts = findViewById(R.id.noAttempts);
+        noAttempts.setText(n + "");
+    }
+
+    void startTimer(){
+        final TextView timeRemaining = (TextView) findViewById(R.id.gameTimeRemaining);
+        timer = new CountDownTimer(120000, 1000){
+            @Override
+            public void onTick(long millis){
+                int min = (int) millis / 60000;
+                int sec = (int) (millis % 60000) / 1000;
+                String text;
+                if(sec < 10) text = min + ":0" + sec;
+                else text = min + ":" + sec;
+                timeRemaining.setText(text);
+            }
+            @Override
+            public void onFinish(){
+
+            }
+        }.start();
+    }
+
+    void stopGame(){
+        timer.cancel();
+    }
+
     public void onClick(View v){
         for(int i = 0; i < 12; i++){
             if(v.getId() == getResources().getIdentifier("gameImageView" + i, "id", getPackageName())){
@@ -140,6 +180,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
     @Override
     public void onBackPressed(){
         finish();

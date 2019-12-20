@@ -43,13 +43,20 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         Button fetchButton = (Button) findViewById(R.id.fetchButton);
         fetchButton.setOnClickListener(this);
         imageSelected = new HashMap<Integer, Boolean>();
-        imageSelectedCount = 0;
         imageCards = new ArrayList<ImageCard>();
         gameCards = new ArrayList<ImageCard>();
+        imageSelectedCount = 0;
         progressBar = findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setMax(100);
         progressTextView = findViewById(R.id.progress_textview);
+        progressTextView.setText("Click 'fetch' to download images");
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if(imageCards.size() != 0) updateSelectedImageCount();
     }
 
     @Override
@@ -66,17 +73,20 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
             v.setColorFilter(Color.YELLOW, PorterDuff.Mode.OVERLAY);
             imageSelected.put(imgNo, true);
             imageSelectedCount++;
-            if(imageSelectedCount == 6) startGameActivity();
         } else {
             v.clearColorFilter();
             imageSelected.put(imgNo, false);
             imageSelectedCount--;
         }
+        updateSelectedImageCount();
+        if(imageSelectedCount == 6) startGameActivity();
     }
 
     void startFetchImageTask(){
         clearImages();
         clearImageOnClickListeners();
+        progressTextView.setText("Downloading.. 0%");
+        progressBar.setProgress(0);
         final EditText urlEditText = findViewById(R.id.urlEditText);
         imageViewNo = 0;
         imageCards.clear();
@@ -99,7 +109,10 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         int percentComplete = imageViewNo * 5;
         progressBar.setProgress(percentComplete);
         progressTextView.setText("Downloading.. " + percentComplete +" %");
-        if(imageViewNo == NO_OF_IMAGES) setImageOnClickListeners();
+        if(imageViewNo == NO_OF_IMAGES) {
+            setImageOnClickListeners();
+            progressTextView.setText("Choose 6 images to start playing");
+        }
     }
 
     @Override
@@ -155,8 +168,7 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         saveBitmapFiles();
         resetImageToggles();
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("mode", "singlePlayer");
-        startActivityForResult(intent, 0);
+        startActivity(intent);
     }
 
     void generateGameCards(){
@@ -183,4 +195,12 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
             }
         }
     }
+
+    void updateSelectedImageCount() {
+        if(imageSelectedCount == 0) progressTextView.setText("Choose 6 images to start playing");
+        else progressTextView.setText(imageSelectedCount + " / 6 chosen");
+    }
+
+    @Override
+    public void onBackPressed(){ finish(); }
 }
