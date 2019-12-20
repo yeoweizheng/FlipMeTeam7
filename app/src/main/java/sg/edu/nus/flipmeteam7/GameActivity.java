@@ -22,8 +22,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     ArrayList<ImageCard> gameCards;
     ImageCard[] gameMap;
+    boolean[] matched;
     boolean disableClick;
-    ArrayList<Integer> cardsOpen;
+    int firstCardOpen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,12 +32,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         generateGameCards();
         generateGameMap();
         setImageOnClickListeners();
+        matched = new boolean[12];
         for(int i = 0; i < 12; i++) {
+            matched[i] = false;
             initCard(i);
             closeCard(i);
         }
         disableClick = false;
-        cardsOpen = new ArrayList<Integer>();
+        firstCardOpen = -1;
     }
     void generateGameCards(){
         gameCards = new ArrayList<ImageCard>();
@@ -77,51 +80,63 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setImageBitmap(gameMap[location].getBitmap());
     }
     void openCard(int location){
+        if(disableClick || location == firstCardOpen) return;
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("gameImageView" + location, "id", getPackageName()));
-        if(cardsOpen.size() == 0) {
+        if(firstCardOpen == -1){ // Only 1 card open
             imageView.clearColorFilter();
-            cardsOpen.add(location);
+            firstCardOpen = location;
+            disableClick = false;
         } else {
-            final boolean match;
-            if(gameMap[cardsOpen.get(0)].getId() == gameMap[location].getId()){
-                match = true;
-            } else {
-                match = false;
-            }
             imageView.clearColorFilter();
-            disableClick = true;
-            cardsOpen.add(location);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if(!match) {
+            if(gameMap[firstCardOpen].getId() == gameMap[location].getId()){ // 2 cards open & matching
+                matched[firstCardOpen] = true;
+                matched[location] = true;
+                disableCard(firstCardOpen);
+                disableCard(location);
+                closeUnmatchedCards();
+                firstCardOpen = -1;
+            } else { // 2 cards open && not matching
+                disableClick = true;
+                firstCardOpen = -1;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
                             Thread.currentThread().sleep(1000);
-                            for (int cardOpen : cardsOpen) {
-                                closeCard(cardOpen);
-                            }
+                            closeUnmatchedCards();
+                            disableClick = false;
+                        } catch(InterruptedException e){
+                            e.printStackTrace();
                         }
-                        cardsOpen.clear();
-                        disableClick = false;
-                    } catch(InterruptedException e){
-                        e.printStackTrace();
                     }
-                }
-            }).start();
+                }).start();
+            }
+        }
+    }
+    void closeUnmatchedCards(){
+        for(int i = 0; i < 12; i++){
+            if(!matched[i]) closeCard(i);
         }
     }
     void closeCard(int location){
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("gameImageView" + location, "id", getPackageName()));
+        imageView.clearColorFilter();
         imageView.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_OVER);
     }
 
+    void disableCard(int location){
+        ImageView imageView = (ImageView) findViewById(getResources().
+                getIdentifier("gameImageView" + location, "id", getPackageName()));
+        imageView.setOnClickListener(null);
+    }
+
     public void onClick(View v){
-        if(disableClick) return;
         for(int i = 0; i < 12; i++){
             if(v.getId() == getResources().getIdentifier("gameImageView" + i, "id", getPackageName())){
                 openCard(i);
+                return;
             }
         }
     }
