@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,8 +37,8 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_choose_image);
         Button fetchButton = (Button) findViewById(R.id.fetchButton);
         fetchButton.setOnClickListener(this);
-        setImageOnClickListeners();
         imageSelected = new HashMap<Integer, Boolean>();
+        imageSelectedCount = 0;
         imageCards = new ArrayList<ImageCard>();
         gameCards = new ArrayList<ImageCard>();
     }
@@ -66,8 +67,10 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
 
     void startFetchImageTask(){
         clearImages();
+        clearImageOnClickListeners();
         final EditText urlEditText = findViewById(R.id.urlEditText);
         imageViewNo = 0;
+        imageCards.clear();
         if(fetchImageTask != null){
             fetchImageTask.cancel(true);
         }
@@ -77,12 +80,24 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onBitmapReady(ImageCard imageCard){
-        if(imageViewNo > NO_OF_IMAGES) return;
+        if(imageViewNo >= NO_OF_IMAGES) return;
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("chooseImageView" + imageViewNo, "id", getPackageName()));
         imageView.setImageBitmap(imageCard.getBitmap());
         imageCards.add(imageCard);
         imageViewNo++;
+        if(imageViewNo == NO_OF_IMAGES) setImageOnClickListeners();
+    }
+
+    @Override
+    public void makeToast(String message){
+        final String innerMsg = message;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), innerMsg, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     void setImageOnClickListeners(){
@@ -90,6 +105,14 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
             ImageView imageView = (ImageView) findViewById(getResources().
                     getIdentifier("chooseImageView" + i, "id", getPackageName()));
             imageView.setOnClickListener(this);
+        }
+    }
+
+    void clearImageOnClickListeners(){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
+            ImageView imageView = (ImageView) findViewById(getResources().
+                    getIdentifier("chooseImageView" + i, "id", getPackageName()));
+            imageView.setOnClickListener(null);
         }
     }
 
@@ -104,9 +127,20 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    void resetImageToggles(){
+        for(int i = 0; i < NO_OF_IMAGES; i++){
+            ImageView imageView = (ImageView) findViewById(getResources().
+                    getIdentifier("chooseImageView" + i, "id", getPackageName()));
+            imageView.clearColorFilter();
+            imageSelected.put(i, false);
+        }
+        imageSelectedCount = 0;
+    }
+
     void startGameActivity(){
         generateGameCards();
         saveBitmapFiles();
+        resetImageToggles();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("mode", "singlePlayer");
         startActivityForResult(intent, 0);
@@ -123,8 +157,9 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         for(int i = 0; i < 6; i++){
             String filename = "bitmap" + i;
             File file = new File(getApplicationContext().getFilesDir(), filename);
+            if(file.exists()) file.delete();
             try {
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                FileOutputStream fileOutputStream = new FileOutputStream(file, false);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 gameCards.get(i).getBitmap().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                 byte[] bytes = byteArrayOutputStream.toByteArray();
