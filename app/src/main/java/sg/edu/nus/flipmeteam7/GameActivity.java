@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,14 +20,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener{
-
+    MediaPlayer gamesong;
     ArrayList<ImageCard> gameCards;
     ImageCard[] gameMap;
     boolean[] matched;
     boolean disableClick;
     int firstCardOpen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        gamesong = MediaPlayer.create(GameActivity.this,R.raw.gamesong);
+        gamesong.setLooping(true);
+        gamesong.start();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         generateGameCards();
@@ -142,6 +147,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     public void onBackPressed(){
+        gamesong.stop();
         finish();
     }
 }
