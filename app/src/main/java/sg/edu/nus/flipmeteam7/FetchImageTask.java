@@ -1,5 +1,6 @@
 package sg.edu.nus.flipmeteam7;
 
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
