@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ourWhite"
+    android:theme="@style/MainPageTheme"
     tools:context=".MainActivity">
 
 
@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_red" />
+        app:srcCompat="@drawable/logo_woodbg" />
 
     <Button
         android:id="@+id/startGameButton"
@@ -25,7 +25,7 @@
         android:layout_width="161dp"
         android:layout_height="68dp"
         android:textSize="48dp"
-        android:theme="@style/MainPageTheme"
+        android:theme="@style/mainPageBtnStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
