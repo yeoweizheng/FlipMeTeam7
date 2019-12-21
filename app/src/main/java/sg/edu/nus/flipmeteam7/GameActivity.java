@@ -1,10 +1,14 @@
 package sg.edu.nus.flipmeteam7;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,19 +23,16 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GameActivity extends AppCompatActivity implements View.OnClickListener{
-    MediaPlayer gamesong;
+public class GameActivity extends AppCompatActivity implements View.OnClickListener, ServiceConnection {
     ArrayList<ImageCard> gameCards;
     ImageCard[] gameMap;
     boolean[] matched;
     boolean disableClick;
     int firstCardOpen;
+    MusicService musicService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        gamesong = MediaPlayer.create(GameActivity.this,R.raw.gamesong);
-        gamesong.setLooping(true);
-        gamesong.start();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         generateGameCards();
@@ -45,7 +46,22 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
         disableClick = false;
         firstCardOpen = -1;
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, this, BIND_AUTO_CREATE);
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(musicService != null) musicService.playGameSong();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        unbindService(this);
+    }
+
     void generateGameCards(){
         gameCards = new ArrayList<ImageCard>();
         for(int i = 0; i < 6; i++){
@@ -147,7 +163,18 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     public void onBackPressed(){
-        gamesong.stop();
         finish();
+    }
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service){
+        MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+        if(binder != null) {
+            musicService = binder.getService();
+            musicService.playGameSong();
+        }
+    }
+    @Override
+    public void onServiceDisconnected(ComponentName name){
+
     }
 }

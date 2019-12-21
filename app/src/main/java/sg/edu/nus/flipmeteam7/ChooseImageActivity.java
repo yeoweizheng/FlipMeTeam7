@@ -1,11 +1,14 @@
 package sg.edu.nus.flipmeteam7;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.Image;
 import android.os.AsyncTask;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +28,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ChooseImageActivity extends AppCompatActivity implements View.OnClickListener, FetchImageTask.ICallback {
+public class ChooseImageActivity extends AppCompatActivity implements View.OnClickListener, FetchImageTask.ICallback, ServiceConnection {
 
     public static final int NO_OF_IMAGES = 20;
     int imageViewNo, imageSelectedCount;
@@ -35,6 +38,7 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     ArrayList<ImageCard> gameCards;
     private ProgressBar progressBar;
     private TextView progressTextView;
+    MusicService musicService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,20 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setMax(100);
         progressTextView = findViewById(R.id.progress_textview);
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, this, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(musicService != null) musicService.playMenuSong();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        unbindService(this);
     }
 
     @Override
@@ -181,5 +199,18 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service){
+        MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+        if(binder != null) {
+            musicService = binder.getService();
+            musicService.playMenuSong();
+        }
+    }
+    @Override
+    public void onServiceDisconnected(ComponentName name){
+
     }
 }
