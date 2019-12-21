@@ -39,6 +39,7 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     private ProgressBar progressBar;
     private TextView progressTextView;
     MusicService musicService;
+    boolean continuePlaying;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,13 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onResume(){
         super.onResume();
+        continuePlaying = false;
         if(musicService != null) musicService.playMenuSong();
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(musicService != null && !continuePlaying) musicService.stopPlaying();
     }
 
     @Override
@@ -215,7 +222,10 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onBackPressed(){ finish(); }
+    public void onBackPressed(){
+        continuePlaying = true;
+        finish();
+    }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service){

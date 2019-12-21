@@ -65,6 +65,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public void onPause(){
+        super.onPause();
+        if(musicService != null) musicService.stopPlaying();
+    }
+
+    @Override
     public void onDestroy(){
         super.onDestroy();
         unbindService(this);
