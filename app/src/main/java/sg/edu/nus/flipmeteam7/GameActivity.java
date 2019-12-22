@@ -62,6 +62,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         startTimer();
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, this, BIND_AUTO_CREATE);
+        stopGame();
     }
 
     @Override
