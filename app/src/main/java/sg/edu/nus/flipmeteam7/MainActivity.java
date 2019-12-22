@@ -13,7 +13,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ServiceConnection {
     MusicService musicService;
-    boolean startingGame;
+    boolean continuePlaying;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +27,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onResume(){
         super.onResume();
-        startingGame = false;
+        continuePlaying = false;
         if(musicService != null) musicService.playMenuSong();
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        if(musicService != null && !startingGame) musicService.stopPlaying();
+        if(musicService != null && !continuePlaying) musicService.stopPlaying();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v){
         switch(v.getId()){
             case R.id.startGameButton:
-                startingGame = true;
+                continuePlaying = true;
                 Intent intent = new Intent(this, ChooseImageActivity.class);
                 startActivity(intent);
                 break;
