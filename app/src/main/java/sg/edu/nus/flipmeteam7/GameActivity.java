@@ -1,10 +1,8 @@
 package sg.edu.nus.flipmeteam7;
 
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -15,13 +13,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -217,16 +216,37 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         boolean win = false;
         if(noMatches == 6) win = true;
         LayoutInflater layoutInflater = LayoutInflater.from(GameActivity.this);
-        View promptView = layoutInflater.inflate(R.layout.dialog_enter_name, null);
+        final View promptView = layoutInflater.inflate(R.layout.dialog_enter_name, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
         alertDialogBuilder.setView(promptView);
         alertDialogBuilder.setCancelable(false);
         alertDialog = alertDialogBuilder.create();
-        Button submitButton = promptView.findViewById(R.id.submitBtn);
+        final Button submitButton = promptView.findViewById(R.id.submitBtn);
         submitButton.setOnClickListener(this);
+        submitButton.setEnabled(false);
+        submitButton.setAlpha(0.5f);
         TextView dialogGreeting = promptView.findViewById(R.id.dialogGreeting);
         TextView scoreView = promptView.findViewById(R.id.score);
         scoreView.setText(" " + score + " pts");
+        EditText nameInput = promptView.findViewById(R.id.nameInput);
+        nameInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                TextView textView = promptView.findViewById(R.id.nameInput);
+                if(textView.getText().length() == 0) {
+                    submitButton.setEnabled(false);
+                    submitButton.setAlpha(0.5f);
+                }
+                else {
+                    submitButton.setEnabled(true);
+                    submitButton.setAlpha(1);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
         if(win) {
             dialogGreeting.setText("Congratulations!");
             dialogGreeting.setTextColor(ContextCompat.getColor(this, R.color.ourGreen));
@@ -240,7 +260,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v){
         if(v.getId() == R.id.submitBtn){
             alertDialog.dismiss();
-            finish();
+            Intent intent = new Intent(this, LeaderBoardActivity.class);
+            startActivity(intent);
         }
         for(int i = 0; i < 12; i++){
             if(v.getId() == getResources().getIdentifier("gameImageView" + i, "id", getPackageName())){
