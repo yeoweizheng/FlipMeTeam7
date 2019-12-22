@@ -1,27 +1,31 @@
 package sg.edu.nus.flipmeteam7;
 
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.CountDownTimer;
-import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.DataInputStream;
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -35,6 +39,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     int noMatches;
     CountDownTimer timer;
     MusicService musicService;
+    AlertDialog alertDialog;
+    int timeRemaining;
+    int score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,8 +184,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void startTimer(){
-        final TextView timeRemaining = (TextView) findViewById(R.id.gameTimeRemaining);
-        timer = new CountDownTimer(120000, 1000){
+        final TextView timeRemainingView = (TextView) findViewById(R.id.gameTimeRemaining);
+        timer = new CountDownTimer(60000, 1000){
             @Override
             public void onTick(long millis){
                 int min = (int) millis / 60000;
@@ -186,20 +193,55 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 String text;
                 if(sec < 10) text = min + ":0" + sec;
                 else text = min + ":" + sec;
-                timeRemaining.setText(text);
+                timeRemainingView.setText(text);
+                timeRemaining = (int) millis / 1000;
             }
             @Override
             public void onFinish(){
-
+                stopGame();
             }
         }.start();
     }
 
     void stopGame(){
         timer.cancel();
+        calculateScore();
+        showEnterNamePrompt();
+    }
+
+    void calculateScore(){
+        score = (int)(10000 * (9 / (float)noAttempts) * ((float)(timeRemaining + 10)/ 60) * ((float)noMatches / 6));
+    }
+
+    void showEnterNamePrompt(){
+        boolean win = false;
+        if(noMatches == 6) win = true;
+        LayoutInflater layoutInflater = LayoutInflater.from(GameActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_enter_name, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
+        alertDialogBuilder.setView(promptView);
+        alertDialogBuilder.setCancelable(false);
+        alertDialog = alertDialogBuilder.create();
+        Button submitButton = promptView.findViewById(R.id.submitBtn);
+        submitButton.setOnClickListener(this);
+        TextView dialogGreeting = promptView.findViewById(R.id.dialogGreeting);
+        TextView scoreView = promptView.findViewById(R.id.score);
+        scoreView.setText(" " + score + " pts");
+        if(win) {
+            dialogGreeting.setText("Congratulations!");
+            dialogGreeting.setTextColor(ContextCompat.getColor(this, R.color.ourGreen));
+        } else {
+            dialogGreeting.setText("Time's up... Try harder!");
+            dialogGreeting.setTextColor(ContextCompat.getColor(this, R.color.ourRed));
+        }
+        alertDialog.show();
     }
 
     public void onClick(View v){
+        if(v.getId() == R.id.submitBtn){
+            alertDialog.dismiss();
+            finish();
+        }
         for(int i = 0; i < 12; i++){
             if(v.getId() == getResources().getIdentifier("gameImageView" + i, "id", getPackageName())){
                 openCard(i);
