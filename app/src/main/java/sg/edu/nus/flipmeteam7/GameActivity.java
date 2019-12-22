@@ -1,8 +1,10 @@
 package sg.edu.nus.flipmeteam7;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -41,6 +43,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     AlertDialog alertDialog;
     int timeRemaining;
     int score;
+    EditText nameInput;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +67,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         startTimer();
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, this, BIND_AUTO_CREATE);
-        stopGame();
+        sharedPreferences = getSharedPreferences("leaderBoard", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     }
 
     @Override
@@ -229,7 +235,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         TextView dialogGreeting = promptView.findViewById(R.id.dialogGreeting);
         TextView scoreView = promptView.findViewById(R.id.score);
         scoreView.setText(" " + score + " pts");
-        EditText nameInput = promptView.findViewById(R.id.nameInput);
+        nameInput = promptView.findViewById(R.id.nameInput);
         nameInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -260,6 +266,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onClick(View v){
         if(v.getId() == R.id.submitBtn){
+            saveScores(nameInput.getText().toString(), score);
             alertDialog.dismiss();
             Intent intent = new Intent(this, LeaderBoardActivity.class);
             startActivity(intent);
@@ -270,6 +277,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
         }
+    }
+
+    void saveScores(String name, int score){
+        int i = 0;
+        while(true){
+            if(!sharedPreferences.contains("name" + i)) break;
+            i++;
+        }
+        editor.putString("name" + i, name);
+        editor.putInt("score" + i, score);
+        editor.commit();
     }
 
     @Override

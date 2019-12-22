@@ -44,7 +44,7 @@ public class LeaderboardAdapter extends ArrayAdapter {
         }
         row.rankView.setText(rowItem.rank);
         row.nameView.setText(rowItem.name);
-        row.scoreView.setText(rowItem.score);
+        row.scoreView.setText(rowItem.score + "");
         return view;
     }
 }
