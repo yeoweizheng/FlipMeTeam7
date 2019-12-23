@@ -98,7 +98,6 @@ public class FetchImageTask extends AsyncTask<String, ImageCard, Void> {
             } catch(IOException e){
                 e.printStackTrace();
             }
-            //try{ Thread.sleep(100); } catch(InterruptedException e){e.printStackTrace();}
         }
     }
 
