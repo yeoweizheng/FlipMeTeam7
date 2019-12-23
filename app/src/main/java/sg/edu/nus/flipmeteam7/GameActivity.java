@@ -1,5 +1,8 @@
 package sg.edu.nus.flipmeteam7;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +30,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -48,6 +52,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     SharedPreferences.Editor editor;
     String currentSong;
     boolean continuePlaying;
+    ArrayList<AnimatorSet> animateIn;
+    ArrayList<AnimatorSet> animateOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         generateGameMap();
         setImageOnClickListeners();
         matched = new boolean[12];
+        initializeAnimator();
         for(int i = 0; i < 12; i++) {
             matched[i] = false;
             initCard(i);
@@ -111,6 +118,27 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         unbindService(this);
     }
 
+    void initializeAnimator(){
+        animateIn = new ArrayList<AnimatorSet>();
+        animateOut = new ArrayList<AnimatorSet>();
+        for(int i = 0; i < 12; i++){
+            animateIn.add((AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.in_animation));
+            animateOut.add((AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.out_animation));
+        }
+    }
+
+    void flipCard(final View from, final View to, final int location){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                animateOut.get(location).setTarget(from);
+                animateIn.get(location).setTarget(to);
+                animateOut.get(location).start();
+                animateIn.get(location).start();
+            }
+        });
+    }
+
     void generateGameCards(){
         gameCards = new ArrayList<ImageCard>();
         for(int i = 0; i < 6; i++){
@@ -145,20 +173,31 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void initCard(int location){
+        Bitmap backImg = BitmapFactory.decodeResource(getResources(), R.drawable.small_logo_woodbg);
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("gameImageView" + location, "id", getPackageName()));
+        ImageView backView = (ImageView) findViewById(getResources().
+                getIdentifier("gameBackView" + location, "id", getPackageName()));
         imageView.setImageBitmap(gameMap[location].getBitmap());
+        backView.setImageBitmap(backImg);
+        imageView.setAlpha(0f);
+        float scale = getResources().getDisplayMetrics().density;
+        float distance = 8000;
+        imageView.setCameraDistance(distance * scale);
+        backView.setCameraDistance(distance * scale);
     }
     void openCard(int location){
         if(disableClick || location == firstCardOpen) return;
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("gameImageView" + location, "id", getPackageName()));
+        ImageView backView = (ImageView) findViewById(getResources().
+                getIdentifier("gameBackView" + location, "id", getPackageName()));
         if(firstCardOpen == -1){ // Only 1 card open
-            imageView.clearColorFilter();
+            flipCard(backView, imageView, location);
             firstCardOpen = location;
             disableClick = false;
         } else {
-            imageView.clearColorFilter();
+            flipCard(backView, imageView, location);
             noAttempts++;
             updateNoAttempts(noAttempts);
             if(gameMap[firstCardOpen].getId() == gameMap[location].getId()){ // 2 cards open & matching
@@ -199,8 +238,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     void closeCard(int location){
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("gameImageView" + location, "id", getPackageName()));
-        imageView.clearColorFilter();
-        imageView.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_OVER);
+        ImageView backView = (ImageView) findViewById(getResources().
+                getIdentifier("gameBackView" + location, "id", getPackageName()));
+        if(backView.getAlpha() == 1) return;
+        flipCard(imageView, backView, location);
     }
 
     void disableCard(int location){

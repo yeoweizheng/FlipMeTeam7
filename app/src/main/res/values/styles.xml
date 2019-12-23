@@ -46,6 +46,13 @@
         <item name="android:clickable">true</item>
     </style>
 
+    <style name="backViewStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
     <style name="fetchBtnStyle" parent="Widget.AppCompat.Button.Small">
         <item name="android:background">@drawable/green_button</item>
         <item name="android:textColor">@color/ourWhite</item>
