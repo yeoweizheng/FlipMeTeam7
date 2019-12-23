@@ -33,13 +33,11 @@ public class FetchImageTask extends AsyncTask<String, ImageCard, Void> {
         offset = 10;
         String htmlText = getHTMLText(urls[0]);
         if(htmlText == null) {
-            Log.d("weizheng", "html null");
             if(this.callback != null) callback.makeToast("No html data received. Please try another webpage.");
             return null;
         }
         ArrayList<String> imgTags = getImgTags(htmlText);
         if(imgTags.size() < ChooseImageActivity.NO_OF_IMAGES + offset){
-            Log.d("weizheng", "insufficient");
             if(this.callback != null) callback.makeToast("Insufficient images. Please try another search term.");
             return null;
         }
@@ -76,7 +74,6 @@ public class FetchImageTask extends AsyncTask<String, ImageCard, Void> {
             String imgTag = htmlText.substring(index1, index2 + 1);
             if(imgTag.contains("http")) {
                 imgTags.add(imgTag);
-                Log.d("weizheng", htmlText.substring(index1, index2 + 1));
             }
             lastIndex = index2;
         }

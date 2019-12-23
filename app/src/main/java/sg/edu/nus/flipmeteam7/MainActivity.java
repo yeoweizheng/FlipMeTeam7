@@ -75,7 +75,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.aboutButton:
-
+                intent = new Intent(this, AboutActivity.class);
+                continuePlaying = true;
+                startActivity(intent);
+                break;
         }
     }
 
