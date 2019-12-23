@@ -173,7 +173,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void initCard(int location){
-        Bitmap backImg = BitmapFactory.decodeResource(getResources(), R.drawable.small_logo_woodbg);
+        Bitmap backImg = BitmapFactory.decodeResource(getResources(), R.drawable.v2_small_logo_woodbg);
         ImageView imageView = (ImageView) findViewById(getResources().
                 getIdentifier("gameImageView" + location, "id", getPackageName()));
         ImageView backView = (ImageView) findViewById(getResources().
