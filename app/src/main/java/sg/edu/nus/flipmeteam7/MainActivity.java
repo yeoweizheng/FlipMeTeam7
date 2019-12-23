@@ -14,12 +14,14 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ServiceConnection {
     MusicService musicService;
     boolean continuePlaying;
+    Button startGameButton;
+    Button scoreButton;
+    Button aboutButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button startGameButton = (Button) findViewById(R.id.startGameButton);
-        startGameButton.setOnClickListener(this);
+        setButtonOnClickListeners();
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, this, BIND_AUTO_CREATE);
     }
@@ -43,6 +45,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         unbindService(this);
     }
 
+    void setButtonOnClickListeners(){
+        startGameButton = findViewById(R.id.startGameButton);
+        scoreButton = findViewById(R.id.scoreButton);
+        aboutButton = findViewById(R.id.aboutButton);
+        startGameButton.setOnClickListener(this);
+        scoreButton.setOnClickListener(this);
+        aboutButton.setOnClickListener(this);
+    }
+
     @Override
     public void onBackPressed(){
         finish();
@@ -50,12 +61,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
+        Intent intent;
         switch(v.getId()){
             case R.id.startGameButton:
                 continuePlaying = true;
-                Intent intent = new Intent(this, ChooseImageActivity.class);
+                intent = new Intent(this, ChooseImageActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.scoreButton:
+                intent = new Intent(this, LeaderBoardActivity.class);
+                intent.putExtra("currentSong", "menu");
+                continuePlaying = true;
+                startActivity(intent);
+                break;
+            case R.id.aboutButton:
+
         }
     }
 

@@ -71,7 +71,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         bindService(intent, this, BIND_AUTO_CREATE);
         sharedPreferences = getSharedPreferences("leaderBoard", MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        currentSong = "menu";
+        currentSong = "game";
     }
 
     @Override
@@ -92,7 +92,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     void playMusic(){
         if(musicService != null) {
             switch(currentSong){
-                case "menu":
+                case "game":
                     musicService.playGameSong();
                     break;
                 case "happy":

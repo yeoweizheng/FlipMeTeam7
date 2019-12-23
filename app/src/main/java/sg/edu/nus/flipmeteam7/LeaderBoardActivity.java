@@ -37,13 +37,16 @@ public class LeaderBoardActivity extends AppCompatActivity implements View.OnCli
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, this, BIND_AUTO_CREATE);
         currentSong = getIntent().getStringExtra("currentSong");
+        if(currentSong.equals("menu")){
+            playAgainButton.setText("Main Menu");
+        }
     }
 
     void playMusic(){
         if(musicService != null) {
             switch(currentSong){
                 case "menu":
-                    musicService.playGameSong();
+                    musicService.playMenuSong();
                     break;
                 case "happy":
                     musicService.playHappySong();
