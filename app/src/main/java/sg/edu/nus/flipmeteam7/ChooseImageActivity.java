@@ -66,6 +66,9 @@ public class ChooseImageActivity extends AppCompatActivity implements View.OnCli
         super.onResume();
         continuePlaying = false;
         if(musicService != null) musicService.playMenuSong();
+        if(imageViewNo == NO_OF_IMAGES) {
+            progressTextView.setText("Choose 6 images to start playing");
+        }
     }
     @Override
     public void onPause(){

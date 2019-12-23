@@ -41,11 +41,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     CountDownTimer timer;
     MusicService musicService;
     AlertDialog alertDialog;
-    int timeRemaining;
+    long timeRemaining;
     int score;
     EditText nameInput;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    String currentSong;
+    boolean continuePlaying;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +66,43 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         firstCardOpen = -1;
         noAttempts = 0;
         noMatches = 0;
-        startTimer();
+        timeRemaining = 60000;
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, this, BIND_AUTO_CREATE);
         sharedPreferences = getSharedPreferences("leaderBoard", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        currentSong = "menu";
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        if(musicService != null) musicService.playGameSong();
+        continuePlaying = false;
+        playMusic();
+        startTimer(timeRemaining);
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        if(musicService != null) musicService.stopPlaying();
+        if(musicService != null && !continuePlaying) musicService.stopPlaying();
+        if(timer != null) timer.cancel();
+    }
+
+    void playMusic(){
+        if(musicService != null) {
+            switch(currentSong){
+                case "menu":
+                    musicService.playGameSong();
+                    break;
+                case "happy":
+                    musicService.playHappySong();
+                    break;
+                case "sad":
+                    musicService.playSadSong();
+                    break;
+            }
+        }
     }
 
     @Override
@@ -147,7 +169,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 closeUnmatchedCards();
                 firstCardOpen = -1;
                 noMatches++;
-                if(noMatches == 6) stopGame();
+                if(noMatches == 6) {
+                    currentSong = "happy";
+                    stopGame();
+                }
             } else { // 2 cards open && not matching
                 disableClick = true;
                 firstCardOpen = -1;
@@ -189,9 +214,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         noAttempts.setText(n + "");
     }
 
-    void startTimer(){
+    void startTimer(long millis){
         final TextView timeRemainingView = (TextView) findViewById(R.id.gameTimeRemaining);
-        timer = new CountDownTimer(60000, 1000){
+        timer = new CountDownTimer(millis, 1000){
             @Override
             public void onTick(long millis){
                 int min = (int) millis / 60000;
@@ -200,10 +225,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 if(sec < 10) text = min + ":0" + sec;
                 else text = min + ":" + sec;
                 timeRemainingView.setText(text);
-                timeRemaining = (int) millis / 1000;
+                timeRemaining = millis;
             }
             @Override
             public void onFinish(){
+                currentSong = "sad";
                 stopGame();
             }
         }.start();
@@ -211,12 +237,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     void stopGame(){
         timer.cancel();
+        playMusic();
         calculateScore();
         showEnterNamePrompt();
     }
 
     void calculateScore(){
-        score = (int)(10000 * (9 / (float)noAttempts) * ((float)(timeRemaining + 10)/ 60) * ((float)noMatches / 6));
+        score = (int)(10000 * (9 / (float)noAttempts) * ((float)(timeRemaining + 10000)/ 60000) * ((float)noMatches / 6));
     }
 
     void showEnterNamePrompt(){
@@ -269,7 +296,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             saveScores(nameInput.getText().toString(), score);
             alertDialog.dismiss();
             Intent intent = new Intent(this, LeaderBoardActivity.class);
+            intent.putExtra("currentSong", currentSong);
+            continuePlaying = true;
             startActivity(intent);
+            finish();
         }
         for(int i = 0; i < 12; i++){
             if(v.getId() == getResources().getIdentifier("gameImageView" + i, "id", getPackageName())){
@@ -299,7 +329,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
         if(binder != null) {
             musicService = binder.getService();
-            musicService.playGameSong();
+            playMusic();
         }
     }
     @Override
